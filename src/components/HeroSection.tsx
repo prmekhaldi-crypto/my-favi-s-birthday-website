@@ -36,7 +36,7 @@ const HeroSection = () => {
           className="font-heading text-5xl sm:text-7xl md:text-8xl lg:text-9xl gold-shimmer glow-pulse mb-6"
         >
           Happy Birthday, <br />
-          <span className="italic">Sarah</span>
+          <span className="italic">Cerine</span>
         </motion.h1>
 
         <motion.p
@@ -54,7 +54,7 @@ const HeroSection = () => {
           transition={{ duration: 1, delay: 1.2 }}
           className="font-heading text-gold text-base sm:text-lg tracking-[0.3em] uppercase"
         >
-          April 12, 1995
+          August 27, 2026
         </motion.p>
       </div>
 

@@ -33,7 +33,7 @@ const BirthdayMessageSection = () => (
         transition={{ delay: 0.2 }}
         className="font-handwritten text-xl sm:text-2xl md:text-3xl text-foreground leading-relaxed space-y-6"
       >
-        <p>Dear Sarah,</p>
+        <p>Dear Cerine,</p>
         <p>
           On your birthday, I want you to know that you are one of the most extraordinary
           people I've ever known. You carry light in places others carry shadows, and you
