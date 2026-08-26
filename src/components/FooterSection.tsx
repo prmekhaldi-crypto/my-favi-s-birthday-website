@@ -19,7 +19,7 @@ interface ConfettiPiece {
 
 // ── Data ───────────────────────────────────────────────────────────────────
 const people: Person[] = [
-  { name: "Maria", message: "Maria's birthday message", unavailableMessage: "Maria's video has not been added yet." },
+  { name: "Maria", videoSrc: "/maria.mp4", message: "Maria's birthday message" },
   { name: "Mya", videoSrc: "/mya.MP4", message: "Mya's birthday message" },
   { name: "Les mentors", videoSrc: "/mentors.MOV", message: "REDA, YOUNES & ANES" },
   { name: "Yasmine", videoSrc: "/yasmine.MOV", message: "Yasmine's birthday message" },
