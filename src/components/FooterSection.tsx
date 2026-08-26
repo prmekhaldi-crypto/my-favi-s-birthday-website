@@ -1,13 +1,14 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ChangeEvent } from "react";
 import { Play, Pause, Music2, X } from "lucide-react";
 
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface Person {
   name: string;
-  videoSrc: string;
+  videoSrc?: string;
   message: string;
+  unavailableMessage?: string;
 }
 
 interface ConfettiPiece {
@@ -18,14 +19,16 @@ interface ConfettiPiece {
 
 // ── Data ───────────────────────────────────────────────────────────────────
 const people: Person[] = [
-  { name: "Maria",   videoSrc: "", message: "Maria's birthday message" },
-  { name: "Melissa", videoSrc: "", message: "Melissa's birthday message" },
-{ name: "Les mentors", videoSrc: "/mentors.MOV", message: "REDA, YOUNES & ANES" },
-  { name: "Yasmine",    videoSrc: "", message: "Yasmine's birthday message" },
-  { name: "Mimi",   videoSrc: "", message: "Sofia's birthday message" },
-  { name: "Lclika",   videoSrc: "", message: "Karim's birthday message" },
-  { name: "Nourhane",    videoSrc: "", message: "Lina's birthday message" },
-  { name: "People y7bok",  videoSrc: "", message: "Younes's birthday message" },
+  { name: "Maria", message: "Maria's birthday message", unavailableMessage: "Maria's video has not been added yet." },
+  { name: "Mya", videoSrc: "/mya.MP4", message: "Mya's birthday message" },
+  { name: "Les mentors", videoSrc: "/mentors.MOV", message: "REDA, YOUNES & ANES" },
+  { name: "Yasmine", videoSrc: "/yasmine.MOV", message: "Yasmine's birthday message" },
+  { name: "Dounia", videoSrc: "/dounia.MOV", message: "Dounia's birthday message" },
+  { name: "Salah", videoSrc: "/salah.MOV", message: "Salah's birthday message" },
+  { name: "Fedoua", videoSrc: "/fedoua.MOV", message: "Fedoua's birthday message" },
+  { name: "Aya & Yas", videoSrc: "/aya & yas.MP4", message: "Aya & Yas's birthday message" },
+  { name: "Yas", videoSrc: "/yas.MOV", message: "Yas's birthday message" },
+  { name: "Nani", videoSrc: "/nani.MP4", message: "Nani's birthday message" },
 ];
 
 // ── Floating bubbles ───────────────────────────────────────────────────────
@@ -54,7 +57,7 @@ const FloatingBubble = ({
   const hOffset   = 1 + (sideIndex % 2) * 4;
   const topPercent = 5 + sideIndex * 22;
 
-  const positionStyle: React.CSSProperties = {
+  const positionStyle: CSSProperties = {
     width: size,
     height: size,
     top: `${topPercent}%`,
@@ -198,7 +201,7 @@ const MusicPlayer = () => {
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSeek = (e: ChangeEvent<HTMLInputElement>) => {
     const audio = audioRef.current;
     if (!audio) return;
     audio.currentTime = Number(e.target.value);
@@ -307,15 +310,23 @@ const MusicPlayer = () => {
 };
 
 // ── Birthday Countdown ─────────────────────────────────────────────────────
+const BIRTHDAY_MONTH = 7; // August (zero-indexed)
+const BIRTHDAY_DAY = 26;
+
 const useBirthdayCountdown = () => {
   const getNext = () => {
     const now      = new Date();
     const thisYear = now.getFullYear();
-    // 🗓 Change month (0-indexed) and day to Cerine's real birthday
-    let bday = new Date(thisYear, 5, 15);
-    if (bday <= now) bday = new Date(thisYear + 1, 5, 15);
-    const diff = bday.getTime() - now.getTime();
+    const birthdayStart = new Date(thisYear, BIRTHDAY_MONTH, BIRTHDAY_DAY);
+    const birthdayEnd = new Date(thisYear, BIRTHDAY_MONTH, BIRTHDAY_DAY + 1);
+    const isBirthday = now >= birthdayStart && now < birthdayEnd;
+    const nextBirthday = now < birthdayStart
+      ? birthdayStart
+      : new Date(thisYear + 1, BIRTHDAY_MONTH, BIRTHDAY_DAY);
+    const diff = Math.max(0, nextBirthday.getTime() - now.getTime());
+
     return {
+      isBirthday,
       days:    Math.floor(diff / (1000 * 60 * 60 * 24)),
       hours:   Math.floor((diff / (1000 * 60 * 60)) % 24),
       minutes: Math.floor((diff / (1000 * 60)) % 60),
@@ -349,8 +360,7 @@ const CountdownUnit = ({ value, label }: { value: number; label: string }) => (
 );
 
 const BirthdayCountdown = () => {
-  const { days, hours, minutes, seconds } = useBirthdayCountdown();
-  const isBirthday = days === 0 && hours === 0 && minutes === 0;
+  const { days, hours, minutes, seconds, isBirthday } = useBirthdayCountdown();
 
   if (isBirthday) {
     return (
@@ -385,7 +395,10 @@ const VideoModal = ({
 }: {
   person: Person;
   onClose: () => void;
-}) => (
+}) => {
+  const [failedToLoad, setFailedToLoad] = useState(false);
+
+  return (
   <AnimatePresence>
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
@@ -413,18 +426,22 @@ const VideoModal = ({
         </div>
 
         <div className="aspect-video bg-black flex items-center justify-center">
-          {person.videoSrc ? (
+          {person.videoSrc && !failedToLoad ? (
             <video
               src={person.videoSrc}
               controls
               autoPlay
-              className="w-full h-full object-cover"
+              playsInline
+              onError={() => setFailedToLoad(true)}
+              className="w-full h-full object-contain"
             />
           ) : (
             <div className="flex flex-col items-center gap-3 text-cream/30">
               <Play className="w-12 h-12" />
               <p className="font-body text-sm">
-                Add <code className="text-gold/70">videoSrc</code> for {person.name}
+                {failedToLoad
+                  ? `Sorry, ${person.name}'s video could not be played in this browser.`
+                  : person.unavailableMessage ?? `Add a video for ${person.name}`}
               </p>
             </div>
           )}
@@ -436,7 +453,8 @@ const VideoModal = ({
       </motion.div>
     </motion.div>
   </AnimatePresence>
-);
+  );
+};
 
 // ── Main Component ─────────────────────────────────────────────────────────
 const FooterSection = () => {

@@ -4,26 +4,7 @@ import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import GoldDivider from "./GoldDivider";
 
 const wishes = [
-  { name: "Maria", message: "" },
-  { name: "Melissa", message: "" },
-  { name: "Reda", message: "" },
-  { name: "Anes", message: "" },
-  { name: "Weed", message: "" },
-  { name: "Karim", message: "" },
   { name: "1min3", message: "Joyeux anniversaire best 720 resident!" },
-  { name: "Younes", message: "" },
-  { name: "Nani", message: "" },
-  { name: "Mimi", message: "" },
-  { name: "Sanaa", message: "" },
-  { name: "Yasmine & Aya", message: "" },
-  { name: "Salah", message: "" },
-  { name: "Nani", message: "" },
-  { name: "Nadine & Serine", message: "" },
-  { name: "Lina mehdi", message: "" },
-  { name: "Rania", message: "" },
-  { name: "Tarik", message: "" },
-  { name: "Bahaa", message: "" },
-  { name: "Mehdi & Jamyl", message: "" },
 ];
 
 const PER_PAGE = 4;
@@ -171,6 +152,10 @@ const WishesSection = () => {
             Wishes from Friends
           </motion.h2>
           <GoldDivider />
+
+          <p className="mt-6 text-center font-body text-sm italic text-primary/60">
+            This section will be filled later with the messages you receive on Instagram and elsewhere.
+          </p>
 
           {/* Tabs */}
           <div className="flex items-center justify-center gap-2 mt-10">
